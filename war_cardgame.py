@@ -90,3 +90,83 @@ class Player:
 
     def has_cards(self):
       return len(self.hand.cards) != 0
+
+######################
+#### GAME PLAY #######
+######################
+class Game:
+  """
+  This is the Game class which contains the game logic. The game is played out 
+  automatically. Each game consists of the Player and the Computer. Each player
+  must forfeit their cards to a war pile. Winner of the round will take everything
+  in the war pile. To start, instantiate Game and run start_new_game() method.
+  """
+  def __init__(self):
+    self.war_pile = []
+
+  def deal_cards(self):
+    deck = Deck()
+    deck.shuffle()
+    hand1 = Hand(deck.split()[0])
+    hand2 = Hand(deck.split()[1])
+    computer = Player('Computer', hand1)
+    player = Player('Player', hand2)
+    return (computer, player)
+
+  def check_card_ranks(self, c_card, p_card):
+    card_value = {'1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, 
+      '8': 8, '9': 9,  '10': 10,  'J': 11,  'Q': 12, 'K': 13, 'A': 14 }
+    c_value = card_value[c_card[1]]
+    p_value = card_value[p_card[1]]
+    if (p_value == c_value):
+      print('Cards have the same rank! A war has started!')
+      self.war()
+    elif (p_value > c_value):
+      print('Player has won this round')
+      self.player.hand.add(self.war_pile)
+      self.war_pile = []
+    else:
+      print('Computer has won this round')
+      self.computer.hand.add(self.war_pile)
+      self.war_pile = []
+
+    self.play_card()
+
+    
+
+  def war(self):
+    print('Settling war...')
+    c_war_draw = self.computer.wage_war()
+    p_war_draw = self.player.wage_war()
+    self.war_pile.extend(c_war_draw)
+    self.war_pile.extend(p_war_draw)
+
+  def play_card(self):
+    if self.player.has_cards() == False:
+      self.computer.hand.add(self.war_pile)
+      return print('Computer has won the game!!!')
+    elif self.computer.has_cards() == False:
+      self.player.hand.add(self.war_pile)
+      return print('Player has won the game!!!')
+    else:
+      print('Player played a card')
+      player_card = self.player.play_card()
+      print('Computer played a card')
+      computer_card = self.computer.play_card()
+      print('Added cards to war pile and comparing ranks of played cards')
+      self.war_pile.extend([player_card, computer_card])
+      self.check_card_ranks(computer_card, player_card)
+
+
+  def start_new_game(self):
+    print("Welcome to War, let's begin!")
+    self.computer, self.player = self.deal_cards()
+
+    while self.player.has_cards() and self.computer.has_cards():
+      self.play_card()
+    
+    return
+
+war = Game()
+war.start_new_game()
+
