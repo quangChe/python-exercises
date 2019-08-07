@@ -63,3 +63,30 @@ class Hand:
 
     def remove(self):
       return self.cards.pop()
+
+class Player:
+    """
+    This is the Player class, which takes in a name and an instance of a Hand
+    class object. The Player can then play cards and check if they still have cards.
+    """
+    def __init__(self,name,hand):
+      self.name = name
+      self.hand = hand
+
+    def __str__(self):
+      return 'Player, "{}", is holding cards {}'.format(self.name, self.hand)
+
+    def play_card(self):
+      card_played = self.hand.remove()
+      print('{} played {}'.format(self.name, card_played))
+      return card_played
+
+    def wage_war(self):
+      war_cards = []
+      if (len(self.hand.cards) >= 3):
+        for _ in range(3):
+          war_cards.append(self.hand.remove())
+      return war_cards
+
+    def has_cards(self):
+      return len(self.hand.cards) != 0
